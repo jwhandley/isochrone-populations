@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+
+  <style>
+    #map {
+      height: 450px;
+      flex: 1
+    }
+
+    #content {
+      display: flex;
+      gap: 1rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <title>Isochrone Populations</title>
+</head>
+
+<body>
+  <h1>Isochrone Population Finder</h1>
+  <h3 id="result" style="text-align: center;">Population inside isochrone:</h3>
+  <div id="content">
+    <form id="isochrone-form">
+      <label for="lat">Latitude:</label>
+      <input type="number" step="any" id="lat" name="lat" value="51.501" min="-90" max="90" required>
+      <br>
+      <label for="lng">Longitude:</label>
+      <input type="number" step="any" id="lng" name="lng" value="-0.118" min="-180" max="180" required>
+      <br>
+      <label for="travel_time">Travel Time:</label>
+      <input type="time" id="travel_time" name="travel_time" value="00:30" min="00:10" max="03:00" required>
+      <br>
+      <button type="submit" id="submitButton">Get Isochrone</button>
+    </form>
+    <div id="map"></div>
+  </div>
+
+
+
+
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
