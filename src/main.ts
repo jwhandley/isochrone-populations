@@ -24,8 +24,9 @@ document.getElementById("isochrone-form")!.addEventListener("submit", async (eve
     }
 
     const data = await response.json() as FeatureCollection;
-
-    getElement("result")!.textContent = `Population inside isochrone: ${parseInt(data.features[0].properties!["population"]).toLocaleString()}`;
+    const pop = parseInt(data.features[0].properties!["population"]);
+    const timeFormat = parseInt(hours) > 0 ? `${hours} hours and ${mins} minutes` : `${mins} minutes`;
+    getElement("result")!.innerHTML = `<p><strong>${pop.toLocaleString()}</strong> people live within ${timeFormat} of (${lat},${lng}) by public transit</p>`;
     if (geoJsonLayer) {
       map.removeLayer(geoJsonLayer);
     }
@@ -48,7 +49,7 @@ function getElement<T extends HTMLElement>(id: string): T | null {
   return document.getElementById(id) as T | null;
 }
 
-const map = L.map('map').setView([51.505, -0.09], 8);
+const map = L.map('map').setView([51.505, -0.09], 4);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'

@@ -25,7 +25,10 @@
 
 <body>
   <h1>Isochrone Population Finder</h1>
-  <h3 id="result" style="text-align: center;">Population inside isochrone:</h3>
+  <p>Click a point on the map and then click <strong>Get Isochrone</strong> to get the number of people who can reach
+    that point
+    within the specified travel time.</p>
+  <p id="result" style="text-align: center;"></p>
   <div id="content">
     <form id="isochrone-form">
       <label for="lat">Latitude:</label>
@@ -45,7 +48,7 @@
     <p>Isochrones from <a href="https://traveltime.com/">traveltime.com</a> and population counts made using the <a
         href="https://human-settlement.emergency.copernicus.eu/download.php?ds=pop">Global Human Settlement Layer</a>
       gridded population dataset.</p>
-    <p>Made by John Handley. Email me at <a href="mailto:jwhandley17@gmail.com">jwhandley17@gmail.com</a></p>
+    <p>Made by John Handley. Email me at <a href="mailto:jwhandley17@gmail.com">jwhandley17@gmail.com</a>.</p>
   </footer>
   <script type="module" src="/src/main.ts"></script>
 </body>
