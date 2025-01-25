@@ -17,6 +17,34 @@
       display: flex;
       gap: 1rem;
     }
+
+    .autoComplete {
+      position: relative;
+      width: 100%;
+    }
+
+    .autoComplete-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: #212121;
+      border: 1px solid #898ea4;
+      z-index: 10000;
+      border-radius: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-item {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .result-item:hover {
+      background: #ffb300;
+    }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -25,12 +53,18 @@
 
 <body>
   <h1>Isochrone Population Finder</h1>
-  <p>Click a point on the map and then click <strong>Get Isochrone</strong> to get the number of people who can reach
+  <p>Click a point on the map or search for a location and then click <strong>Get Isochrone</strong> to get the number
+    of people who can reach
     that point
     within the specified travel time.</p>
   <p id="result" style="text-align: center;"></p>
+
   <div id="content">
     <form id="isochrone-form">
+      <label for="location">Location:</label>
+      <div class="autoComplete">
+        <input type="text" id="location" placeholder="Search for a location" autocomplete="off">
+      </div>
       <label for="lat">Latitude:</label>
       <input type="number" step="any" id="lat" name="lat" value="51.501" min="-90" max="90" required>
       <br>

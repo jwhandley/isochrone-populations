@@ -1,8 +1,15 @@
-import { FeatureCollection } from 'geojson';
+import { FeatureCollection, Point } from 'geojson';
 import * as L from 'leaflet';
 let geoJsonLayer: L.GeoJSON | undefined = undefined;
 let marker: L.Marker | undefined = undefined;
 let isPanning = false;
+let timeout: number | undefined = undefined;
+const debounce = (func: TimerHandler, delay: number) => {
+  clearTimeout(timeout);
+  timeout = setTimeout(func, delay);
+};
+
+
 
 document.getElementById("isochrone-form")!.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -26,7 +33,7 @@ document.getElementById("isochrone-form")!.addEventListener("submit", async (eve
     const data = await response.json() as FeatureCollection;
     const pop = parseInt(data.features[0].properties!["population"]);
     const timeFormat = parseInt(hours) > 0 ? `${hours} hours and ${mins} minutes` : `${mins} minutes`;
-    getElement("result")!.innerHTML = `<p><strong>${pop.toLocaleString()}</strong> people live within ${timeFormat} of (${lat},${lng}) by public transit</p>`;
+    getElement("result")!.innerHTML = `<p><strong>${pop.toLocaleString()}</strong> people live within ${timeFormat} of (${lat},${lng}) by public transportation.</p>`;
     if (geoJsonLayer) {
       map.removeLayer(geoJsonLayer);
     }
@@ -56,16 +63,56 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 map.on('dragstart', () => {
-  // Set the flag to true when the user starts dragging the map
   isPanning = true;
 });
 
 map.on('dragend', () => {
-  // Set the flag to false when the user stops dragging the map
   isPanning = false;
 });
 
+const locationInput = getElement<HTMLInputElement>("location")!;
+const autoCompleteContainer = document.createElement("div");
+autoCompleteContainer.className = "autoComplete-results";
+autoCompleteContainer.style.display = "none";
+locationInput.parentElement!.appendChild(autoCompleteContainer);
+locationInput.addEventListener("change", () => {
+  if (locationInput.value.length == 0) autoCompleteContainer.innerHTML = "";
+});
 
+locationInput.addEventListener("keyup", async () => {
+  const query = locationInput.value.trim();
+  if (query.length <= 2) return;
+  debounce(() => geocode(query), 200);
+});
+
+async function geocode(query: string): Promise<void> {
+  const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=geojson&limit=5&city=${query}`);
+  const results = await resp.json() as FeatureCollection
+
+  autoCompleteContainer.innerHTML = "";
+  autoCompleteContainer.style.display = "none";
+
+  results.features.forEach((feature) => {
+    const { display_name } = feature.properties as { display_name: string };
+    const resultItem = document.createElement("div");
+    resultItem.className = "result-item";
+    resultItem.textContent = display_name;
+
+    resultItem.addEventListener("click", () => {
+      locationInput.value = display_name;
+      autoCompleteContainer.innerHTML = "";
+      autoCompleteContainer.style.display = "none";
+
+      const geometry = feature.geometry as Point;
+      getElement<HTMLInputElement>("lat")!.value = geometry.coordinates[1].toFixed(3);
+      getElement<HTMLInputElement>("lng")!.value = geometry.coordinates[0].toFixed(3);
+
+    });
+
+    autoCompleteContainer.appendChild(resultItem);
+  });
+  autoCompleteContainer.style.display = "inline-block";
+}
 
 map.addEventListener("click", (e) => {
   if (isPanning) {
